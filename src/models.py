@@ -70,7 +70,7 @@ class HLGC(nn.Module):
         self.early_stopping_epochs = early_stopping_epochs
         self.label_dict = label_dict
         
-        if type(self.class_weights) is not torch.tensor:
+        if (self.class_weights is not None) and (type(self.class_weights) is not torch.tensor):
             self.class_weights = torch.tensor(self.class_weights, dtype=torch.float32)
         
         self._build_model()
@@ -318,4 +318,4 @@ acc - (clf : {:3f}, recon : {:3f})'.format(epoch, itr, loss.item(), clf_loss.ite
         print('Training complete!')
         
     def load(self, path):
-        self.load_state_dict(path)
+        self.load_state_dict(torch.load(path))
