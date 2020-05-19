@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout
 import matplotlib.pyplot as plt
+import os
 
 from sklearn.model_selection import train_test_split
 
@@ -251,7 +252,7 @@ acc - (clf : {:3f}, recon : {:3f})'.format(eval_loss, eval_clf_loss, eval_suppor
             )
         return eval_clf_acc
     
-    def fit(self, train_features, train_targets, val_features=None, val_targets=None):
+    def fit(self, train_features, train_targets, val_features=None, val_targets=None, save_dir=None):
         if (val_features is None) or (val_targets is None):
             print('No validation data provided, using {}% of train data'.format(100*self.val_split))
             
@@ -304,6 +305,9 @@ acc - (clf : {:3f}, recon : {:3f})'.format(epoch, itr, loss.item(), clf_loss.ite
             if val_acc > best_acc:
                 best_acc = val_acc
                 since_best = 0
+                if save_dir:
+                    path = os.path.join(save_dir, 'model.weights'.format(itr))
+                    torch.save(self.state_dict(), path)
             else:
                 since_best += 1
                 
@@ -312,3 +316,6 @@ acc - (clf : {:3f}, recon : {:3f})'.format(epoch, itr, loss.item(), clf_loss.ite
             if since_best == self.early_stopping_epochs:
                 break
         print('Training complete!')
+        
+    def load(self, path):
+        self.load_state_dict(path)
