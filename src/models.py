@@ -76,7 +76,7 @@ class HLGC(nn.Module):
             
 #         self.l1_mask = []
 #         for i, dim in enumerate(categorical_dims):
-#             self.l1_mask.append(torch.ones(dim)*(1/(0.7**i))) #(0.8**i))
+#             self.l1_mask.append(torch.ones(dim)*(0.1**i))
 #         self.l1_mask = torch.cat(self.l1_mask)
         
         self._build_model()
@@ -90,6 +90,7 @@ class HLGC(nn.Module):
         ])
         
         self.global_dense = nn.Linear(sum(self.categorical_dims), self.hidden_dim, bias=True)
+        
         self.out_dense = nn.Linear(self.hidden_dim, self.n_classes, bias=True)
         self.dropout = nn.Dropout(self.dropout_rate)
                 
@@ -217,6 +218,7 @@ class HLGC(nn.Module):
             
         #h = torch.tanh(self.global_dense(torch.cat(states, dim=-1)))
         h = self.global_dense(torch.cat(states, dim=-1))
+        
         support_logits = self.out_dense(h)
         clf_logits = self.out_dense(h_0)
         
